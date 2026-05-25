@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PixelVault — Free High-Resolution Stock Photos</title>
+<meta name="description" content="Millions of free high-resolution photos for personal and commercial use. No attribution required.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0c0c0e; --bg2: #141416; --bg3: #1c1c20;
+    --text: #f0ede8; --muted: #888680;
+    --accent: #d4ff5c; --border: rgba(255,255,255,0.08);
+    --card-radius: 12px;
+  }
+  body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 14px; }
+
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(12,12,14,0.85); backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 60px;
+  }
+  .logo { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; letter-spacing: -0.5px; color: var(--text); }
+  .logo span { color: var(--accent); }
+  .nav-links { display: flex; gap: 1.5rem; }
+  .nav-links a { color: var(--muted); text-decoration: none; font-size: 13px; transition: color 0.2s; }
+  .nav-links a:hover { color: var(--text); }
+  .nav-btn {
+    background: var(--accent); color: #0c0c0e; border: none; padding: 7px 18px; border-radius: 6px;
+    font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'Syne', sans-serif; transition: opacity 0.2s;
+  }
+  .nav-btn:hover { opacity: 0.85; }
+
+  .hero {
+    padding: 5rem 2rem 4rem; text-align: center;
+    background: radial-gradient(ellipse 80% 60% at 50% -20%, rgba(212,255,92,0.07) 0%, transparent 70%);
+  }
+  .hero-label {
+    display: inline-block; font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--accent); border: 1px solid rgba(212,255,92,0.3); padding: 4px 14px; border-radius: 20px; margin-bottom: 1.5rem;
+  }
+  .hero h1 {
+    font-family: 'Syne', sans-serif; font-size: clamp(2.2rem, 6vw, 4rem);
+    font-weight: 800; line-height: 1.1; letter-spacing: -1.5px; margin-bottom: 1rem;
+  }
+  .hero h1 em { font-style: normal; color: var(--accent); }
+  .hero p { color: var(--muted); font-size: 15px; line-height: 1.7; max-width: 480px; margin: 0 auto 2.5rem; }
+
+  .search-wrap { max-width: 580px; margin: 0 auto; display: flex; gap: 8px; }
+  .search-input {
+    flex: 1; background: var(--bg3); border: 1px solid var(--border);
+    color: var(--text); font-size: 14px; font-family: 'Inter', sans-serif;
+    padding: 12px 18px; border-radius: 10px; outline: none; transition: border-color 0.2s;
+  }
+  .search-input::placeholder { color: var(--muted); }
+  .search-input:focus { border-color: rgba(212,255,92,0.4); }
+  .search-btn {
+    background: var(--accent); color: #0c0c0e; border: none; padding: 12px 24px; border-radius: 10px;
+    font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; white-space: nowrap; transition: opacity 0.2s;
+  }
+  .search-btn:hover { opacity: 0.85; }
+
+  .tags { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; max-width: 700px; margin: 1.5rem auto 0; }
+  .tag {
+    background: var(--bg3); border: 1px solid var(--border); color: var(--muted);
+    font-size: 12px; padding: 5px 14px; border-radius: 20px; cursor: pointer; transition: all 0.2s;
+  }
+  .tag:hover, .tag.active { background: rgba(212,255,92,0.1); border-color: rgba(212,255,92,0.4); color: var(--accent); }
+
+  .stats {
+    display: flex; justify-content: center; gap: 3rem; padding: 2.5rem 2rem;
+    border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); margin: 3rem 0 0;
+  }
+  .stat-num { font-family: 'Syne', sans-serif; font-size: 1.8rem; font-weight: 800; color: var(--text); }
+  .stat-label { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  .gallery-section { padding: 3rem 2rem; max-width: 1400px; margin: 0 auto; }
+  .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; }
+  .section-title { font-family: 'Syne', sans-serif; font-size: 1.2rem; font-weight: 700; }
+  .view-all { color: var(--muted); font-size: 13px; text-decoration: none; cursor: pointer; }
+  .view-all:hover { color: var(--accent); }
+
+  .masonry { columns: 4; gap: 14px; }
+  @media (max-width: 1100px) { .masonry { columns: 3; } }
+  @media (max-width: 720px) { .masonry { columns: 2; } }
+  @media (max-width: 480px) { .masonry { columns: 1; } }
+
+  .img-card {
+    break-inside: avoid; margin-bottom: 14px; border-radius: var(--card-radius);
+    overflow: hidden; position: relative; cursor: pointer; background: var(--bg3);
+  }
+  .img-card img { width: 100%; display: block; transition: transform 0.4s ease; border-radius: var(--card-radius); }
+  .img-card:hover img { transform: scale(1.04); }
+  .img-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 50%);
+    opacity: 0; transition: opacity 0.3s; border-radius: var(--card-radius);
+    display: flex; flex-direction: column; justify-content: flex-end; padding: 14px;
+  }
+  .img-card:hover .img-overlay { opacity: 1; }
+  .img-author { font-size: 12px; color: rgba(255,255,255,0.85); }
+  .img-actions { display: flex; gap: 8px; margin-top: 8px; }
+  .btn-dl {
+    background: var(--accent); color: #0c0c0e; border: none; border-radius: 6px;
+    padding: 6px 14px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'Syne', sans-serif;
+  }
+  .btn-fav {
+    background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.2);
+    color: #fff; border-radius: 6px; padding: 6px 10px; font-size: 12px; cursor: pointer;
+  }
+
+  .categories { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-top: 1rem; }
+  .cat-card { border-radius: var(--card-radius); overflow: hidden; position: relative; cursor: pointer; height: 120px; background: var(--bg3); }
+  .cat-card img { width: 100%; height: 100%; object-fit: cover; }
+  .cat-label {
+    position: absolute; inset: 0; background: rgba(0,0,0,0.45);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; color: #fff;
+    letter-spacing: 0.5px; transition: background 0.3s;
+  }
+  .cat-card:hover .cat-label { background: rgba(212,255,92,0.25); color: var(--accent); }
+
+  /* PRIVACY PAGE */
+  .privacy-page { display: none; max-width: 800px; margin: 0 auto; padding: 4rem 2rem; }
+  .privacy-page h1 { font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 800; margin-bottom: 2rem; }
+  .privacy-page h2 { font-family: 'Syne', sans-serif; font-size: 1.2rem; font-weight: 700; margin: 2rem 0 0.8rem; color: var(--accent); }
+  .privacy-page p { color: var(--muted); line-height: 1.8; margin-bottom: 1rem; }
+  .privacy-page ul { color: var(--muted); line-height: 1.8; padding-left: 1.5rem; margin-bottom: 1rem; }
+
+  footer {
+    border-top: 1px solid var(--border); padding: 2rem; text-align: center;
+    color: var(--muted); font-size: 12px; line-height: 2;
+  }
+  footer a { color: var(--muted); text-decoration: none; cursor: pointer; }
+  footer a:hover { color: var(--accent); }
+
+  #loading { text-align: center; padding: 3rem; color: var(--muted); font-size: 14px; display: none; }
+  .spinner {
+    width: 24px; height: 24px; border: 2px solid var(--border); border-top-color: var(--accent);
+    border-radius: 50%; animation: spin 0.7s linear infinite; margin: 0 auto 1rem;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">Pixel<span>Vault</span></div>
+  <div class="nav-links">
+    <a href="#" onclick="showMain()">Explore</a>
+    <a href="#">Categories</a>
+    <a href="#">Photographers</a>
+    <a href="#" onclick="showPrivacy()">Privacy Policy</a>
+  </div>
+  <button class="nav-btn">Upload</button>
+</nav>
+
+<!-- MAIN CONTENT -->
+<div id="mainContent">
+  <section class="hero">
+    <div class="hero-label">Free for Commercial Use · No Attribution Required</div>
+    <h1>Beautiful Stock Photos<br><em>Free to Download</em></h1>
+    <p>Millions of hand-picked photos, free for personal and commercial projects. No copyright hassles, ever.</p>
+    <div class="search-wrap">
+      <input class="search-input" type="text" id="searchInput" placeholder="Search: nature, city, business, food…" />
+      <button class="search-btn" onclick="doSearch()">Search</button>
+    </div>
+    <div class="tags" id="tagList"></div>
+  </section>
+
+  <div class="stats">
+    <div><div class="stat-num">3.2M+</div><div class="stat-label">HD Photos</div></div>
+    <div><div class="stat-num">Free</div><div class="stat-label">Commercial License</div></div>
+    <div><div class="stat-num">8K</div><div class="stat-label">Max Resolution</div></div>
+    <div><div class="stat-num">Daily</div><div class="stat-label">New Uploads</div></div>
+  </div>
+
+  <div class="gallery-section">
+    <div class="section-header">
+      <div class="section-title" id="galleryTitle">✦ Featured Photos</div>
+      <a class="view-all" onclick="loadMore()">Load more →</a>
+    </div>
+    <div class="masonry" id="gallery"></div>
+    <div id="loading"><div class="spinner"></div>Loading…</div>
+  </div>
+
+  <div class="gallery-section">
+    <div class="section-header"><div class="section-title">▤ Browse Categories</div></div>
+    <div class="categories" id="catGrid"></div>
+  </div>
+</div>
+
+<!-- PRIVACY POLICY PAGE -->
+<div class="privacy-page" id="privacyPage">
+  <h1>Privacy Policy</h1>
+  <p>Last updated: January 1, 2024</p>
+  <p>Welcome to PixelVault ("we", "our", or "us"). We are committed to protecting your personal information and your right to privacy.</p>
+
+  <h2>Information We Collect</h2>
+  <p>We may collect information you provide directly to us, such as when you create an account, download photos, or contact us for support. This may include your name, email address, and usage preferences.</p>
+
+  <h2>How We Use Your Information</h2>
+  <ul>
+    <li>To provide and improve our services</li>
+    <li>To send you technical notices and support messages</li>
+    <li>To respond to your comments and questions</li>
+    <li>To monitor and analyze usage trends</li>
+  </ul>
+
+  <h2>Cookies</h2>
+  <p>We use cookies and similar tracking technologies to track activity on our website and store certain information. You can instruct your browser to refuse all cookies or to indicate when a cookie is being sent.</p>
+
+  <h2>Third-Party Advertising</h2>
+  <p>We use Google AdSense to serve ads on our website. Google may use cookies to serve ads based on your prior visits to our website or other websites. You may opt out of personalized advertising by visiting <a href="https://www.google.com/settings/ads" style="color: var(--accent);">Google Ads Settings</a>.</p>
+
+  <h2>Photo Licenses</h2>
+  <p>All photos on PixelVault are sourced from Unsplash and are free to use under the Unsplash License. Photos may be used for commercial and non-commercial purposes without permission or attribution, though attribution is appreciated.</p>
+
+  <h2>Contact Us</h2>
+  <p>If you have any questions about this Privacy Policy, please contact us at: privacy@pixelvault.com</p>
+</div>
+
+<footer>
+  <div>© 2024 PixelVault — Photos provided by <a href="https://unsplash.com" target="_blank">Unsplash</a> under the Unsplash License</div>
+  <div><a onclick="showMain()">Home</a> · <a onclick="showPrivacy()">Privacy Policy</a> · <a>Terms of Use</a> · <a>Contact</a></div>
+</footer>
+
+<script>
+  const ACCESS_KEY = 'YOUR_UNSPLASH_ACCESS_KEY';
+
+  const TAGS = ['Nature','Architecture','Business','Food & Drink','Travel','Portrait','Technology','Animals'];
+  const QUERIES = ['nature','architecture','business','food','travel','portrait','technology','animal'];
+  const CATS = [
+    {label:'Nature',q:'nature'},{label:'Architecture',q:'architecture'},
+    {label:'Food',q:'food'},{label:'Travel',q:'travel'},
+    {label:'Portrait',q:'portrait'},{label:'Technology',q:'technology'},
+    {label:'Animals',q:'animal'},{label:'Business',q:'business'},
+  ];
+
+  let currentPage = 1;
+  let currentQuery = 'nature';
+
+  function showMain() {
+    document.getElementById('mainContent').style.display = 'block';
+    document.getElementById('privacyPage').style.display = 'none';
+  }
+  function showPrivacy() {
+    document.getElementById('mainContent').style.display = 'none';
+    document.getElementById('privacyPage').style.display = 'block';
+    window.scrollTo(0, 0);
+  }
+
+  function renderTags() {
+    document.getElementById('tagList').innerHTML = TAGS.map((t,i) =>
+      `<span class="tag${i===0?' active':''}" onclick="tagClick(this,'${QUERIES[i]}')">${t}</span>`
+    ).join('');
+  }
+
+  function tagClick(el, q) {
+    document.querySelectorAll('.tag').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    currentQuery = q; currentPage = 1;
+    document.getElementById('gallery').innerHTML = '';
+    document.getElementById('galleryTitle').textContent = '✦ ' + el.textContent + ' Photos';
+    fetchImages(q, 1);
+  }
+
+  function doSearch() {
+    const q = document.getElementById('searchInput').value.trim() || 'nature';
+    currentQuery = q; currentPage = 1;
+    document.getElementById('gallery').innerHTML = '';
+    document.getElementById('galleryTitle').textContent = `✦ Results for "${q}"`;
+    fetchImages(q, 1);
+  }
+
+  function loadMore() { currentPage++; fetchImages(currentQuery, currentPage); }
+
+  function fetchImages(query, page) {
+    const loading = document.getElementById('loading');
+    loading.style.display = 'block';
+    if (ACCESS_KEY === 'YOUR_UNSPLASH_ACCESS_KEY') {
+      loading.style.display = 'none';
+      usePlaceholders(query); return;
+    }
+    fetch(`https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&page=${page}&per_page=20&client_id=${ACCESS_KEY}`)
+      .then(r => r.json())
+      .then(data => {
+        loading.style.display = 'none';
+        if (!data.results || data.results.length === 0) { usePlaceholders(query); return; }
+        data.results.forEach(photo => appendCard(photo));
+      })
+      .catch(() => { loading.style.display = 'none'; usePlaceholders(query); });
+  }
+
+  function appendCard(photo) {
+    const gallery = document.getElementById('gallery');
+    const card = document.createElement('div');
+    card.className = 'img-card';
+    const thumb = photo.urls?.small || photo.url;
+    const full = photo.urls?.full || photo.url;
+    const author = photo.user?.name || 'Photographer';
+    const h = photo.height || 300, w = photo.width || 400;
+    card.innerHTML = `
+      <img src="${thumb}" alt="${photo.alt_description||''}" loading="lazy" style="aspect-ratio:${w}/${h}">
+      <div class="img-overlay">
+        <div class="img-author">📸 ${author}</div>
+        <div class="img-actions">
+          <button class="btn-dl" onclick="window.open('${full}','_blank')">Download</button>
+          <button class="btn-fav">♡</button>
+        </div>
+      </div>`;
+    gallery.appendChild(card);
+  }
+
+  function usePlaceholders(query) {
+    const gallery = document.getElementById('gallery');
+    const seeds = ['forest','city','food','sky','ocean','mountain','flower','sunset','street','coffee','desk','travel','portrait','tech','animal','building'];
+    const sizes = [[400,500],[400,300],[400,600],[400,400],[400,350],[400,550],[400,320],[400,480],[400,260],[400,440],[400,380],[400,520],[400,290],[400,460],[400,340],[400,410]];
+    for (let i = 0; i < 16; i++) {
+      const card = document.createElement('div');
+      card.className = 'img-card';
+      const [pw, ph] = sizes[i];
+      card.innerHTML = `
+        <img src="https://picsum.photos/seed/${seeds[i]}/${pw}/${ph}" alt="${query}" loading="lazy" style="aspect-ratio:${pw}/${ph}">
+        <div class="img-overlay">
+          <div class="img-author">📸 Sample Photo</div>
+          <div class="img-actions">
+            <button class="btn-dl">Download</button>
+            <button class="btn-fav">♡</button>
+          </div>
+        </div>`;
+      gallery.appendChild(card);
+    }
+  }
+
+  function renderCategories() {
+    document.getElementById('catGrid').innerHTML = CATS.map((c,i) => `
+      <div class="cat-card" onclick="tagClick(document.querySelectorAll('.tag')[${i}],'${c.q}')">
+        <img src="https://picsum.photos/seed/${c.q}/360/240" alt="${c.label}" loading="lazy">
+        <div class="cat-label">${c.label}</div>
+      </div>`).join('');
+  }
+
+  document.getElementById('searchInput').addEventListener('keydown', e => { if (e.key === 'Enter') doSearch(); });
+  renderTags();
+  renderCategories();
+  fetchImages('nature', 1);
+</script>
+</body>
+</html>
