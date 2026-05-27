@@ -229,7 +229,7 @@
 </footer>
 
 <script>
-  const ACCESS_KEY = 'YOUR_UNSPLASH_ACCESS_KEY';
+  const ACCESS_KEY = 'ABUvP1ml80WAG9QvcLrSkV1BG20ncf5We3SqGLBIP24';
 
   const TAGS = ['Nature','Architecture','Business','Food & Drink','Travel','Portrait','Technology','Animals'];
   const QUERIES = ['nature','architecture','business','food','travel','portrait','technology','animal'];
@@ -281,11 +281,11 @@
   function fetchImages(query, page) {
     const loading = document.getElementById('loading');
     loading.style.display = 'block';
-    if (ACCESS_KEY === 'YOUR_UNSPLASH_ACCESS_KEY') {
+    if (ACCESS_KEY === 'ABUvP1ml80WAG9QvcLrSkV1BG20ncf5We3SqGLBIP24') {
       loading.style.display = 'none';
       usePlaceholders(query); return;
     }
-    fetch(`https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&page=${page}&per_page=20&client_id=${ACCESS_KEY}`)
+    fetch(`https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&page=${page}&per_page=10&client_id=${ACCESS_KEY}`)
       .then(r => r.json())
       .then(data => {
         loading.style.display = 'none';
