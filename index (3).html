@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PixelVault — Free HD Photos & AI Image Generator</title>
+<meta name="description" content="Download millions of free high-resolution photos or generate unique AI images instantly. Free for personal and commercial use. No attribution required.">
+<meta name="keywords" content="free photos, stock images, AI image generator, royalty free, HD wallpapers, free download">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0c0c0e;--bg2:#141416;--bg3:#1c1c20;--text:#f0ede8;--muted:#888680;--accent:#d4ff5c;--purple:#7c6dfa;--border:rgba(255,255,255,0.08);--r:12px}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;overflow-x:hidden}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:200;background:rgba(12,12,14,0.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:62px;gap:1rem}
+.logo{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--text);cursor:pointer;white-space:nowrap;flex-shrink:0;letter-spacing:-0.5px}
+.logo span{color:var(--accent)}
+.nav-links{display:flex;gap:1.4rem}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:13px;transition:color .2s;cursor:pointer;white-space:nowrap;font-weight:500}
+.nav-links a:hover{color:var(--text)}
+.nav-right{display:flex;gap:8px;flex-shrink:0}
+.nav-btn{background:var(--accent);color:#0c0c0e;border:none;padding:7px 18px;border-radius:6px;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:opacity .2s;white-space:nowrap}
+.nav-btn.ghost{background:transparent;color:var(--accent);border:1px solid rgba(212,255,92,0.35)}
+.nav-btn:hover{opacity:.85}
+
+/* PAGES */
+.page{display:none}.page.active{display:block}
+
+/* TABS */
+.main-tabs{display:flex;gap:4px;padding:0 2rem;max-width:1400px;margin:0 auto;border-bottom:1px solid var(--border)}
+.tab-btn{background:none;border:none;color:var(--muted);font-size:14px;font-weight:500;padding:12px 22px;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .2s;font-family:'Inter',sans-serif;white-space:nowrap}
+.tab-btn:hover{color:var(--text)}
+.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
+
+/* HERO */
+.hero{padding:5rem 2rem 4rem;text-align:center;background:radial-gradient(ellipse 80% 60% at 50% -20%,rgba(212,255,92,.06) 0%,transparent 70%)}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--accent);border:1px solid rgba(212,255,92,.3);padding:5px 16px;border-radius:20px;margin-bottom:2rem}
+.hero h1{font-family:'Syne',sans-serif;font-size:clamp(2.4rem,7vw,4.5rem);font-weight:800;line-height:1.05;letter-spacing:-2px;margin-bottom:1.2rem}
+.hero h1 em{font-style:normal;color:var(--accent)}
+.hero p{color:var(--muted);font-size:16px;line-height:1.8;max-width:500px;margin:0 auto 2.5rem}
+.search-wrap{max-width:620px;margin:0 auto;position:relative}
+.search-row{display:flex;gap:8px}
+.search-input{flex:1;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-size:14px;font-family:'Inter',sans-serif;padding:14px 20px;border-radius:10px;outline:none;transition:border-color .2s}
+.search-input::placeholder{color:var(--muted)}
+.search-input:focus{border-color:rgba(212,255,92,.45)}
+.search-btn{background:var(--accent);color:#0c0c0e;border:none;padding:14px 28px;border-radius:10px;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;white-space:nowrap;transition:opacity .15s,transform .1s}
+.search-btn:hover{opacity:.85}.search-btn:active{transform:scale(.97)}
+.suggestions{position:absolute;top:calc(100% + 6px);left:0;right:96px;background:var(--bg3);border:1px solid var(--border);border-radius:10px;overflow:hidden;display:none;z-index:50;box-shadow:0 8px 32px rgba(0,0,0,.5)}
+.suggestions.show{display:block}
+.sug-item{padding:10px 16px;cursor:pointer;font-size:13px;color:var(--muted);transition:background .15s,color .15s;display:flex;align-items:center;gap:10px}
+.sug-item:hover{background:rgba(212,255,92,.08);color:var(--text)}
+.tags{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:1.8rem auto 0;max-width:720px}
+.tag{background:var(--bg3);border:1px solid var(--border);color:var(--muted);font-size:12px;padding:5px 14px;border-radius:20px;cursor:pointer;transition:all .2s;user-select:none}
+.tag:hover,.tag.active{background:rgba(212,255,92,.1);border-color:rgba(212,255,92,.4);color:var(--accent)}
+
+/* STATS BAR */
+.stats-bar{background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:0 2rem}
+.stats-inner{max-width:1200px;margin:0 auto;display:flex;align-items:stretch;flex-wrap:wrap}
+.stat-item{padding:1.8rem 2.5rem;display:flex;align-items:center;gap:14px;border-right:1px solid var(--border);flex:1;min-width:160px}
+.stat-item:last-child{border-right:none}
+.stat-icon{font-size:1.6rem;opacity:.7}
+.stat-num{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;line-height:1}
+.stat-label{font-size:12px;color:var(--muted);margin-top:3px}
+
+/* GALLERY */
+.section{padding:2.5rem 2rem;max-width:1400px;margin:0 auto}
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;gap:8px;flex-wrap:wrap}
+.section-title{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700}
+.filter-bar{display:flex;gap:8px;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap}
+.filter-label{font-size:12px;color:var(--muted);margin-right:2px}
+.filter-btn{background:var(--bg3);border:1px solid var(--border);color:var(--muted);font-size:12px;padding:5px 12px;border-radius:6px;cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif}
+.filter-btn:hover,.filter-btn.active{background:rgba(212,255,92,.08);border-color:rgba(212,255,92,.35);color:var(--accent)}
+.result-info{display:flex;align-items:center;gap:12px;margin-left:auto}
+.result-count{font-size:12px;color:var(--muted)}
+.sort-select{background:var(--bg3);border:1px solid var(--border);color:var(--muted);font-size:12px;padding:5px 10px;border-radius:6px;outline:none;font-family:'Inter',sans-serif;cursor:pointer}
+.masonry{columns:4;gap:14px}
+@media(max-width:1200px){.masonry{columns:3}}
+@media(max-width:780px){.masonry{columns:2}}
+@media(max-width:480px){.masonry{columns:1}}
+
+/* CARDS */
+.img-card{break-inside:avoid;margin-bottom:14px;border-radius:var(--r);overflow:hidden;position:relative;cursor:pointer;background:var(--bg3);transition:transform .3s,box-shadow .3s}
+.img-card:hover{transform:translateY(-3px);box-shadow:0 16px 48px rgba(0,0,0,.6)}
+.img-card img{width:100%;display:block;transition:transform .4s;border-radius:var(--r)}
+.img-card:hover img{transform:scale(1.05)}
+.img-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.78) 0%,transparent 55%);opacity:0;transition:opacity .3s;border-radius:var(--r);display:flex;flex-direction:column;justify-content:flex-end;padding:14px}
+.img-card:hover .img-overlay{opacity:1}
+.img-author{font-size:12px;color:rgba(255,255,255,.9);font-weight:500}
+.img-desc{font-size:11px;color:rgba(255,255,255,.5);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.img-actions{display:flex;gap:6px;margin-top:10px}
+.btn-dl{background:var(--accent);color:#0c0c0e;border:none;border-radius:6px;padding:6px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif;transition:opacity .15s;white-space:nowrap}
+.btn-dl:hover{opacity:.85}
+.btn-icon{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);color:#fff;border-radius:6px;padding:6px 10px;font-size:13px;cursor:pointer;transition:all .2s;line-height:1}
+.btn-icon:hover{background:rgba(212,255,92,.15);border-color:rgba(212,255,92,.4);color:var(--accent)}
+.btn-icon.liked{background:rgba(255,80,80,.25);border-color:rgba(255,80,80,.5);color:#ff5050}
+.img-res-tag{position:absolute;top:10px;left:10px;background:rgba(0,0,0,.55);color:rgba(255,255,255,.7);font-size:9px;font-weight:600;padding:3px 7px;border-radius:8px;letter-spacing:.5px;opacity:0;transition:opacity .3s}
+.img-card:hover .img-res-tag{opacity:1}
+
+/* SKELETON */
+.skeleton{break-inside:avoid;margin-bottom:14px;border-radius:var(--r);background:var(--bg3);overflow:hidden;position:relative}
+.skeleton::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.04),transparent);animation:shimmer 1.5s infinite}
+@keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+
+/* CATEGORIES */
+.cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px;margin-top:1rem}
+.cat-card{border-radius:var(--r);overflow:hidden;position:relative;cursor:pointer;height:115px;background:var(--bg3);transition:transform .3s,box-shadow .3s}
+.cat-card:hover{transform:translateY(-4px);box-shadow:0 12px 36px rgba(0,0,0,.5)}
+.cat-card img{width:100%;height:100%;object-fit:cover;transition:transform .4s}
+.cat-card:hover img{transform:scale(1.08)}
+.cat-overlay{position:absolute;inset:0;background:rgba(0,0,0,.45);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:background .3s}
+.cat-card:hover .cat-overlay{background:rgba(124,109,250,.28)}
+.cat-name{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:#fff;transition:color .3s}
+.cat-card:hover .cat-name{color:var(--accent)}
+.cat-count{font-size:10px;color:rgba(255,255,255,.5);margin-top:4px}
+
+/* TRENDING */
+.trending-section{background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:2rem;margin:1rem 0}
+.trending-inner{max-width:1400px;margin:0 auto}
+.trending-title{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin-bottom:1rem;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;font-size:11px}
+.trending-tags{display:flex;gap:8px;flex-wrap:wrap}
+.trend-tag{display:flex;align-items:center;gap:6px;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-size:12px;padding:6px 14px;border-radius:20px;cursor:pointer;transition:all .2s;font-weight:500}
+.trend-tag:hover{border-color:rgba(212,255,92,.4);color:var(--accent);background:rgba(212,255,92,.06)}
+.trend-num{font-size:10px;color:var(--muted)}
+
+/* AI PAGE */
+.ai-page{max-width:1050px;margin:0 auto;padding:2.5rem 2rem}
+.ai-hero{text-align:center;padding:1.5rem 0 2.5rem}
+.ai-hero h2{font-family:'Syne',sans-serif;font-size:clamp(2rem,5vw,3rem);font-weight:800;margin-bottom:1rem;letter-spacing:-1px}
+.ai-hero h2 span{background:linear-gradient(135deg,var(--purple),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.ai-hero p{color:var(--muted);font-size:15px;line-height:1.8;max-width:520px;margin:0 auto}
+.ai-how{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin:2rem 0 2.5rem;background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:1.5rem}
+@media(max-width:600px){.ai-how{grid-template-columns:1fr}}
+.ai-how-step{text-align:center;padding:.5rem}
+.ai-how-num{font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;color:var(--purple);margin-bottom:.5rem}
+.ai-how-title{font-size:14px;font-weight:600;margin-bottom:.3rem}
+.ai-how-desc{font-size:12px;color:var(--muted);line-height:1.6}
+.ai-form{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:2rem;margin-bottom:2rem}
+.ai-label{font-size:12px;font-weight:600;color:var(--muted);letter-spacing:.6px;text-transform:uppercase;margin-bottom:.6rem;display:block}
+.ai-prompt-row{display:flex;gap:10px;margin-bottom:1.5rem}
+.ai-input{flex:1;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-size:14px;font-family:'Inter',sans-serif;padding:13px 18px;border-radius:10px;outline:none;transition:border-color .2s;resize:none;min-height:52px}
+.ai-input:focus{border-color:rgba(124,109,250,.5)}
+.ai-input::placeholder{color:var(--muted)}
+.ai-gen-btn{background:linear-gradient(135deg,var(--purple),#9b8dff);color:#fff;border:none;padding:13px 28px;border-radius:10px;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:opacity .2s,transform .1s;white-space:nowrap;align-self:flex-start}
+.ai-gen-btn:hover{opacity:.9}.ai-gen-btn:active{transform:scale(.97)}
+.ai-gen-btn:disabled{opacity:.5;cursor:not-allowed}
+.ai-controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:1.5rem}
+.ai-select{background:var(--bg3);border:1px solid var(--border);color:var(--text);font-size:13px;padding:9px 12px;border-radius:8px;outline:none;font-family:'Inter',sans-serif;cursor:pointer;width:100%}
+.ai-presets-wrap{margin-top:.2rem}
+.ai-presets{display:flex;flex-wrap:wrap;gap:8px}
+.ai-preset{background:var(--bg3);border:1px solid var(--border);color:var(--muted);font-size:12px;padding:5px 12px;border-radius:20px;cursor:pointer;transition:all .2s}
+.ai-preset:hover{color:var(--text);border-color:rgba(124,109,250,.4);background:rgba(124,109,250,.08)}
+.ai-results-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px}
+.ai-card{border-radius:var(--r);overflow:hidden;background:var(--bg3);position:relative;transition:transform .3s,box-shadow .3s;cursor:pointer}
+.ai-card:hover{transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,0,0,.5)}
+.ai-card img{width:100%;display:block}
+.ai-card-info{padding:10px 12px}
+.ai-card-prompt{font-size:11px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ai-card-actions{display:flex;gap:6px;margin-top:8px}
+.ai-badge{position:absolute;top:10px;left:10px;background:linear-gradient(135deg,var(--purple),var(--accent));color:#0c0c0e;font-size:9px;font-weight:700;padding:3px 8px;border-radius:10px;letter-spacing:.5px;z-index:2}
+.ai-progress{text-align:center;padding:3rem}
+.ai-spinner{width:36px;height:36px;border:2px solid var(--border);border-top-color:var(--purple);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 1rem}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ai-progress-text{color:var(--muted);font-size:14px}
+.ai-progress-sub{font-size:12px;color:var(--muted);opacity:.6;margin-top:6px}
+.ai-count-badge{display:inline-block;background:rgba(124,109,250,.15);border:1px solid rgba(124,109,250,.3);color:var(--purple);font-size:11px;padding:3px 10px;border-radius:12px;margin-bottom:1rem}
+
+/* COLLECTIONS */
+.coll-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;margin-top:1rem}
+.coll-card{border-radius:var(--r);overflow:hidden;background:var(--bg3);cursor:pointer;transition:transform .3s,box-shadow .3s}
+.coll-card:hover{transform:translateY(-3px);box-shadow:0 12px 36px rgba(0,0,0,.5)}
+.coll-preview{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;height:160px;gap:2px}
+.coll-preview img{width:100%;height:100%;object-fit:cover}
+.coll-preview img:first-child{grid-row:span 2}
+.coll-info{padding:14px 16px}
+.coll-name{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;margin-bottom:4px}
+.coll-meta{font-size:12px;color:var(--muted)}
+
+/* LIGHTBOX */
+.lightbox{position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.92);backdrop-filter:blur(14px);display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:opacity .3s,visibility .3s;padding:20px}
+.lightbox.open{opacity:1;visibility:visible}
+.lb-inner{background:var(--bg2);border-radius:16px;overflow:hidden;max-width:1150px;width:100%;max-height:90vh;display:grid;grid-template-columns:1fr 330px;box-shadow:0 40px 120px rgba(0,0,0,.8);transform:scale(.95);transition:transform .3s}
+.lightbox.open .lb-inner{transform:scale(1)}
+.lb-img-wrap{position:relative;background:#000;display:flex;align-items:center;justify-content:center;min-height:400px}
+.lb-img-wrap img{width:100%;height:100%;object-fit:contain;max-height:90vh}
+.lb-nav{position:absolute;top:50%;transform:translateY(-50%);background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.12);color:#fff;width:42px;height:42px;border-radius:50%;cursor:pointer;font-size:18px;transition:background .2s;display:flex;align-items:center;justify-content:center}
+.lb-nav:hover{background:rgba(212,255,92,.2);color:var(--accent)}
+.lb-prev{left:14px}.lb-next{right:14px}
+.lb-close{position:absolute;top:14px;right:14px;background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.12);color:#fff;width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:16px;z-index:10;transition:background .2s;display:flex;align-items:center;justify-content:center}
+.lb-close:hover{background:rgba(255,80,80,.3)}
+.lb-info{padding:28px 24px;display:flex;flex-direction:column;gap:16px;overflow-y:auto;border-left:1px solid var(--border)}
+.lb-author{display:flex;align-items:center;gap:12px}
+.lb-avatar{width:44px;height:44px;border-radius:50%;background:var(--bg3);overflow:hidden;flex-shrink:0}
+.lb-avatar img{width:100%;height:100%;object-fit:cover}
+.lb-author-name{font-weight:600;font-size:15px}
+.lb-author-handle{font-size:12px;color:var(--muted);margin-top:2px}
+.lb-desc{font-size:13px;color:var(--muted);line-height:1.7;border-top:1px solid var(--border);padding-top:16px}
+.lb-meta{display:flex;flex-direction:column;gap:9px;border-top:1px solid var(--border);padding-top:16px}
+.lb-meta-row{display:flex;justify-content:space-between;font-size:12px}
+.lb-meta-key{color:var(--muted)}.lb-meta-val{font-weight:500}
+.lb-tags{display:flex;flex-wrap:wrap;gap:6px;border-top:1px solid var(--border);padding-top:16px}
+.lb-tag{background:var(--bg3);border:1px solid var(--border);color:var(--muted);font-size:11px;padding:3px 10px;border-radius:20px;cursor:pointer;transition:all .2s}
+.lb-tag:hover{color:var(--accent);border-color:rgba(212,255,92,.4)}
+.lb-actions{display:flex;flex-direction:column;gap:10px;margin-top:auto;padding-top:16px;border-top:1px solid var(--border)}
+.lb-dl{background:var(--accent);color:#0c0c0e;border:none;padding:12px;border-radius:8px;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:opacity .2s;text-align:center;display:block}
+.lb-dl:hover{opacity:.85}
+.lb-sec-row{display:flex;gap:8px}
+.lb-sec{flex:1;background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:9px;border-radius:8px;font-size:12px;cursor:pointer;transition:all .2s;text-align:center;font-family:'Inter',sans-serif}
+.lb-sec:hover{border-color:rgba(212,255,92,.4);color:var(--accent)}
+@media(max-width:768px){.lb-inner{grid-template-columns:1fr;max-height:95vh}.lb-info{max-height:280px;border-left:none;border-top:1px solid var(--border)}}
+
+/* ABOUT / PRIVACY */
+.text-page{max-width:860px;margin:0 auto;padding:3.5rem 2rem}
+.text-page h1{font-family:'Syne',sans-serif;font-size:2.4rem;font-weight:800;margin-bottom:1.5rem;letter-spacing:-1px}
+.text-page h2{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;margin:2.5rem 0 .8rem;color:var(--accent)}
+.text-page p{color:var(--muted);line-height:1.9;margin-bottom:1rem;font-size:14px}
+.text-page ul{color:var(--muted);line-height:1.9;padding-left:1.5rem;margin-bottom:1rem;font-size:14px}
+.feature-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin:2rem 0}
+.feature-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:1.5rem}
+.feature-icon{font-size:2rem;margin-bottom:.8rem}
+.feature-card h3{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;margin-bottom:.5rem}
+.feature-card p{font-size:13px;color:var(--muted);line-height:1.7;margin:0}
+.team-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:1rem;margin:1.5rem 0}
+.team-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:1.5rem;text-align:center}
+.team-avatar{width:60px;height:60px;border-radius:50%;margin:0 auto .8rem;overflow:hidden;background:var(--bg3)}
+.team-avatar img{width:100%;height:100%;object-fit:cover}
+.team-name{font-weight:600;font-size:14px;margin-bottom:.3rem}
+.team-role{font-size:12px;color:var(--muted)}
+
+/* FOOTER */
+footer{border-top:1px solid var(--border);padding:3rem 2rem;margin-top:3rem;background:var(--bg2)}
+.footer-inner{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:2.5rem}
+@media(max-width:780px){.footer-inner{grid-template-columns:1fr 1fr}}
+@media(max-width:480px){.footer-inner{grid-template-columns:1fr}}
+.footer-logo{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;margin-bottom:.8rem;letter-spacing:-0.5px}
+.footer-logo span{color:var(--accent)}
+.footer-desc{font-size:13px;color:var(--muted);line-height:1.8;margin-bottom:1rem}
+.footer-social{display:flex;gap:8px}
+.social-btn{background:var(--bg3);border:1px solid var(--border);color:var(--muted);width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;transition:all .2s;text-decoration:none}
+.social-btn:hover{color:var(--accent);border-color:rgba(212,255,92,.4)}
+.footer-col-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;margin-bottom:1.2rem;color:var(--text)}
+.footer-links{display:flex;flex-direction:column;gap:10px}
+.footer-links a{color:var(--muted);text-decoration:none;font-size:13px;cursor:pointer;transition:color .2s}
+.footer-links a:hover{color:var(--accent)}
+.footer-bottom{max-width:1200px;margin:2rem auto 0;padding-top:1.5rem;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;font-size:12px;color:var(--muted)}
+.footer-bottom a{color:var(--muted);text-decoration:none;cursor:pointer}
+.footer-bottom a:hover{color:var(--accent)}
+
+/* LOADING / MISC */
+#globalLoading{text-align:center;padding:2.5rem;color:var(--muted);display:none}
+.spinner{width:26px;height:26px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 1rem}
+#sentinel{height:1px;margin-top:10px}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:10px 22px;border-radius:8px;font-size:13px;opacity:0;transition:opacity .3s,transform .3s;pointer-events:none;box-shadow:0 4px 24px rgba(0,0,0,.4);z-index:2000;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#backToTop{position:fixed;bottom:24px;right:24px;background:var(--bg3);border:1px solid var(--border);color:var(--text);width:40px;height:40px;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:all .3s;z-index:500}
+#backToTop.show{opacity:1;visibility:visible}
+#backToTop:hover{background:rgba(212,255,92,.1);color:var(--accent)}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo" onclick="showPage('home')">Pixel<span>Vault</span></div>
+  <div class="nav-links">
+    <a onclick="showPage('home');switchTab('search')">Explore</a>
+    <a onclick="showPage('home');switchTab('ai')" style="color:var(--purple)">✨ AI Generate</a>
+    <a onclick="showPage('home');switchTab('cat')">Categories</a>
+    <a onclick="showPage('home');switchTab('coll')">Collections</a>
+    <a onclick="showPage('about')">About</a>
+    <a onclick="showPage('privacy')">Privacy</a>
+  </div>
+  <div class="nav-right">
+    <button class="nav-btn ghost" onclick="showPage('home');switchTab('ai')">✨ AI Generate</button>
+    <button class="nav-btn">Upload</button>
+  </div>
+</nav>
+
+<!-- HOME -->
+<div class="page active" id="page-home">
+
+  <section class="hero">
+    <div class="hero-badge">✦ Free for Commercial Use &nbsp;·&nbsp; No Attribution Required</div>
+    <h1>Beautiful Stock Photos<br><em>Free to Download</em></h1>
+    <p>Millions of hand-picked HD photos plus AI image generation — all free for personal and commercial projects. Zero copyright hassles.</p>
+    <div class="search-wrap">
+      <div class="search-row">
+        <input class="search-input" id="searchInput" type="text" placeholder="Search: nature, city, business, food, abstract…" autocomplete="off">
+        <button class="search-btn" onclick="doSearch()">Search</button>
+      </div>
+      <div class="suggestions" id="suggestions"></div>
+    </div>
+    <div class="tags" id="tagList"></div>
+  </section>
+
+  <!-- STATS -->
+  <div class="stats-bar">
+    <div class="stats-inner">
+      <div class="stat-item"><div class="stat-icon">🖼️</div><div><div class="stat-num">3.2M+</div><div class="stat-label">HD Photos</div></div></div>
+      <div class="stat-item"><div class="stat-icon">✨</div><div><div class="stat-num">AI</div><div class="stat-label">Image Generator</div></div></div>
+      <div class="stat-item"><div class="stat-icon">⚡</div><div><div class="stat-num">Free</div><div class="stat-label">Commercial License</div></div></div>
+      <div class="stat-item"><div class="stat-icon">📐</div><div><div class="stat-num">8K</div><div class="stat-label">Max Resolution</div></div></div>
+      <div class="stat-item"><div class="stat-icon">🌍</div><div><div class="stat-num">180+</div><div class="stat-label">Countries</div></div></div>
+      <div class="stat-item"><div class="stat-icon">👥</div><div><div class="stat-num">2M+</div><div class="stat-label">Active Users</div></div></div>
+    </div>
+  </div>
+
+  <!-- TRENDING -->
+  <div class="trending-section">
+    <div class="trending-inner">
+      <div class="trending-title">🔥 Trending Now</div>
+      <div class="trending-tags" id="trendingTags"></div>
+    </div>
+  </div>
+
+  <!-- MAIN TABS -->
+  <div class="main-tabs">
+    <button class="tab-btn active" id="tab-search" onclick="switchTab('search')">🔍 Photo Search</button>
+    <button class="tab-btn" id="tab-ai" onclick="switchTab('ai')">✨ AI Generator</button>
+    <button class="tab-btn" id="tab-cat" onclick="switchTab('cat')">▤ Categories</button>
+    <button class="tab-btn" id="tab-coll" onclick="switchTab('coll')">◫ Collections</button>
+  </div>
+
+  <!-- SEARCH TAB -->
+  <div id="tabContent-search">
+    <div class="section" id="gallerySection">
+      <div class="section-header">
+        <div class="section-title" id="galleryTitle">✦ Featured Photos</div>
+        <div class="result-info">
+          <span class="result-count" id="resultCount"></span>
+          <select class="sort-select" onchange="onSortChange(this.value)">
+            <option value="relevant">Most Relevant</option>
+            <option value="latest">Latest</option>
+            <option value="popular">Most Popular</option>
+          </select>
+        </div>
+      </div>
+      <div class="filter-bar">
+        <span class="filter-label">Orientation:</span>
+        <button class="filter-btn active" onclick="setOrientation(this,'')">All</button>
+        <button class="filter-btn" onclick="setOrientation(this,'landscape')">Landscape</button>
+        <button class="filter-btn" onclick="setOrientation(this,'portrait')">Portrait</button>
+        <button class="filter-btn" onclick="setOrientation(this,'squarish')">Square</button>
+        <span style="margin-left:auto;display:flex;gap:8px">
+          <span class="filter-label" style="margin:0;align-self:center">Color:</span>
+          <button class="filter-btn active" onclick="setColor(this,'')">Any</button>
+          <button class="filter-btn" onclick="setColor(this,'black_and_white')" style="display:flex;align-items:center;gap:4px">⬛ B&W</button>
+          <button class="filter-btn" onclick="setColor(this,'orange')" style="display:flex;align-items:center;gap:4px">🟠 Warm</button>
+          <button class="filter-btn" onclick="setColor(this,'blue')" style="display:flex;align-items:center;gap:4px">🔵 Cool</button>
+          <button class="filter-btn" onclick="setColor(this,'green')" style="display:flex;align-items:center;gap:4px">🟢 Nature</button>
+        </span>
+      </div>
+      <div class="masonry" id="gallery"></div>
+      <div id="globalLoading"><div class="spinner"></div>Loading more photos…</div>
+      <div id="sentinel"></div>
+    </div>
+  </div>
+
+  <!-- AI TAB -->
+  <div id="tabContent-ai" style="display:none">
+    <div class="ai-page">
+      <div class="ai-hero">
+        <h2>AI <span>Image Generator</span></h2>
+        <p>Describe any image in plain English. Our AI creates stunning, unique visuals in seconds — completely free, no account needed.</p>
+      </div>
+      <div class="ai-how">
+        <div class="ai-how-step"><div class="ai-how-num">01</div><div class="ai-how-title">Describe Your Image</div><div class="ai-how-desc">Type a detailed description of what you want to see</div></div>
+        <div class="ai-how-step"><div class="ai-how-num">02</div><div class="ai-how-title">Choose Style & Size</div><div class="ai-how-desc">Pick from photorealistic, artistic, anime, and more</div></div>
+        <div class="ai-how-step"><div class="ai-how-num">03</div><div class="ai-how-title">Generate & Download</div><div class="ai-how-desc">Get up to 10 unique images, free to download and use</div></div>
+      </div>
+      <div class="ai-form">
+        <label class="ai-label">Describe your image</label>
+        <div class="ai-prompt-row">
+          <textarea class="ai-input" id="aiPrompt" placeholder="e.g. A cozy coffee shop on a rainy evening, warm lighting, bokeh background, cinematic…" rows="2"></textarea>
+          <button class="ai-gen-btn" id="aiGenBtn" onclick="generateImages()">✨ Generate</button>
+        </div>
+        <div class="ai-controls">
+          <div>
+            <label class="ai-label">Style</label>
+            <select class="ai-select" id="aiStyle">
+              <option value="">Photorealistic</option>
+              <option value=", digital art, trending on artstation">Digital Art</option>
+              <option value=", watercolor painting, soft colors">Watercolor</option>
+              <option value=", oil painting, detailed brushwork">Oil Painting</option>
+              <option value=", anime style, studio ghibli">Anime / Ghibli</option>
+              <option value=", cinematic, 8k, dramatic lighting">Cinematic</option>
+              <option value=", minimalist, flat design">Minimalist</option>
+              <option value=", cyberpunk, neon lights, futuristic">Cyberpunk</option>
+              <option value=", pencil sketch, black and white">Pencil Sketch</option>
+              <option value=", vintage, retro, film grain">Vintage / Retro</option>
+            </select>
+          </div>
+          <div>
+            <label class="ai-label">Size</label>
+            <select class="ai-select" id="aiSize">
+              <option value="512/512">Square 512×512</option>
+              <option value="768/512">Landscape 768×512</option>
+              <option value="512/768">Portrait 512×768</option>
+              <option value="1024/576">Widescreen 1024×576</option>
+              <option value="1024/1024">Large 1024×1024</option>
+            </select>
+          </div>
+          <div>
+            <label class="ai-label">Quantity (max 10)</label>
+            <select class="ai-select" id="aiCount">
+              <option value="1">1 image</option>
+              <option value="2">2 images</option>
+              <option value="4" selected>4 images</option>
+              <option value="6">6 images</option>
+              <option value="8">8 images</option>
+              <option value="10">10 images</option>
+            </select>
+          </div>
+          <div>
+            <label class="ai-label">Quality</label>
+            <select class="ai-select" id="aiQuality">
+              <option value=", high quality, sharp">Standard</option>
+              <option value=", ultra detailed, 8k, masterpiece">Ultra HD</option>
+              <option value=", professional photography, award winning">Professional</option>
+            </select>
+          </div>
+        </div>
+        <div class="ai-presets-wrap">
+          <label class="ai-label">Quick Prompts</label>
+          <div class="ai-presets" id="aiPresets"></div>
+        </div>
+      </div>
+      <div id="aiOutput"></div>
+      <div id="aiHistory" style="display:none;margin-top:2rem">
+        <div class="ai-label" style="margin-bottom:1rem">Recent Generations</div>
+        <div class="ai-results-grid" id="aiHistoryGrid"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CATEGORIES TAB -->
+  <div id="tabContent-cat" style="display:none">
+    <div class="section">
+      <div class="section-header"><div class="section-title">▤ Browse by Category</div></div>
+      <div class="cat-grid" id="catGrid"></div>
+    </div>
+  </div>
+
+  <!-- COLLECTIONS TAB -->
+  <div id="tabContent-coll" style="display:none">
+    <div class="section">
+      <div class="section-header"><div class="section-title">◫ Curated Collections</div></div>
+      <div class="coll-grid" id="collGrid"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ABOUT PAGE -->
+<div class="page" id="page-about">
+  <div class="text-page">
+    <h1>About PixelVault</h1>
+    <p>PixelVault is a leading platform for free high-quality visual content. We believe great imagery should be accessible to everyone — from solo creators to global enterprises — without copyright restrictions or licensing fees.</p>
+    <div class="feature-grid">
+      <div class="feature-card"><div class="feature-icon">📸</div><h3>3.2M+ HD Photos</h3><p>Curated collections spanning nature, architecture, business, lifestyle, and more. New photos added daily by our global community.</p></div>
+      <div class="feature-card"><div class="feature-icon">✨</div><h3>AI Image Generator</h3><p>State-of-the-art AI generates unique, high-quality images from your text descriptions. Up to 10 images per generation, completely free.</p></div>
+      <div class="feature-card"><div class="feature-icon">⚡</div><h3>Always Free</h3><p>Every photo and AI-generated image is free for personal and commercial use. No subscription, no watermarks, no attribution required.</p></div>
+      <div class="feature-card"><div class="feature-icon">🔒</div><h3>Safe to Use</h3><p>All content is legally cleared. Photos are sourced from the Unsplash open library under the Unsplash License.</p></div>
+      <div class="feature-card"><div class="feature-icon">🌍</div><h3>Global Community</h3><p>Used by over 2 million creators, designers, and businesses in 180+ countries around the world.</p></div>
+      <div class="feature-card"><div class="feature-icon">🚀</div><h3>Lightning Fast</h3><p>Optimized CDN delivery ensures photos load instantly from anywhere in the world. AI images generate in under 15 seconds.</p></div>
+    </div>
+    <h2>Our Mission</h2>
+    <p>We started PixelVault with a simple belief: access to high-quality visual content shouldn't be gated by expensive licenses. Whether you're a blogger, startup, or Fortune 500 company, you deserve professional-grade imagery.</p>
+    <h2>Photo Sources</h2>
+    <p>Our photo library is powered by <a href="https://unsplash.com" style="color:var(--accent)" target="_blank">Unsplash</a>, the world's most generous photography community. All photos are licensed under the <a href="https://unsplash.com/license" style="color:var(--accent)" target="_blank">Unsplash License</a>, which allows free commercial use.</p>
+    <h2>AI Technology</h2>
+    <p>Our AI image generator is powered by <a href="https://pollinations.ai" style="color:var(--accent)" target="_blank">Pollinations AI</a>, a free and open AI image generation service. Each prompt generates completely unique images.</p>
+    <h2>Contact</h2>
+    <p>Questions? Partnerships? Reach us at <span style="color:var(--accent)">hello@pixelvault.io</span></p>
+  </div>
+</div>
+
+<!-- PRIVACY PAGE -->
+<div class="page" id="page-privacy">
+  <div class="text-page">
+    <h1>Privacy Policy</h1>
+    <p>Last updated: January 1, 2024. PixelVault ("we", "our", "us") is committed to protecting your privacy.</p>
+    <h2>Information We Collect</h2>
+    <p>We may collect information you provide directly (name, email when contacting us) and automatically collected data (search queries, pages visited, IP address, browser type) via cookies and analytics tools.</p>
+    <h2>How We Use Your Information</h2>
+    <ul>
+      <li>To provide and continuously improve our services</li>
+      <li>To personalize search results and recommendations</li>
+      <li>To send technical notices and support messages</li>
+      <li>To monitor and analyze usage patterns</li>
+      <li>To detect and prevent abuse or fraudulent activity</li>
+    </ul>
+    <h2>Cookies</h2>
+    <p>We use cookies to remember your preferences and improve your experience. You can disable cookies in your browser settings at any time, though some features may not work correctly.</p>
+    <h2>Google AdSense</h2>
+    <p>This website uses Google AdSense to display advertisements. Google uses cookies to serve ads based on your prior visits to this and other websites. You may opt out of personalized advertising by visiting <a href="https://www.google.com/settings/ads" style="color:var(--accent)" target="_blank">Google Ads Settings</a>. We display advertising to support the free services we provide.</p>
+    <h2>Photo & AI Content</h2>
+    <p>Photos are sourced from Unsplash under the Unsplash License (free commercial use). AI-generated images are created via Pollinations AI. We do not claim ownership of user-generated AI images.</p>
+    <h2>Third-Party Services</h2>
+    <p>We integrate Unsplash API, Pollinations AI, and Google Analytics. Each has their own privacy policies that govern their data practices.</p>
+    <h2>Data Retention</h2>
+    <p>We retain collected data for as long as necessary to provide our services, typically no more than 12 months for analytics data.</p>
+    <h2>Your Rights</h2>
+    <p>You have the right to access, correct, or delete your personal data. Contact us at <span style="color:var(--accent)">privacy@pixelvault.io</span></p>
+    <h2>Contact</h2>
+    <p>For privacy questions: <span style="color:var(--accent)">privacy@pixelvault.io</span></p>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div>
+      <div class="footer-logo">Pixel<span>Vault</span></div>
+      <div class="footer-desc">Millions of free HD photos and AI image generation. Free for commercial use, no attribution required. Trusted by 2M+ creators worldwide.</div>
+      <div class="footer-social">
+        <a class="social-btn" title="Twitter">𝕏</a>
+        <a class="social-btn" title="Instagram">📸</a>
+        <a class="social-btn" title="GitHub">⌥</a>
+      </div>
+    </div>
+    <div>
+      <div class="footer-col-title">Explore</div>
+      <div class="footer-links">
+        <a onclick="showPage('home');switchTab('search')">Photo Search</a>
+        <a onclick="showPage('home');switchTab('ai')">AI Generator</a>
+        <a onclick="showPage('home');switchTab('cat')">Categories</a>
+        <a onclick="showPage('home');switchTab('coll')">Collections</a>
+      </div>
+    </div>
+    <div>
+      <div class="footer-col-title">Popular Topics</div>
+      <div class="footer-links">
+        <a onclick="tagClick(null,'nature','Nature')">Nature</a>
+        <a onclick="tagClick(null,'business','Business')">Business</a>
+        <a onclick="tagClick(null,'travel','Travel')">Travel</a>
+        <a onclick="tagClick(null,'food','Food')">Food & Drink</a>
+        <a onclick="tagClick(null,'technology','Technology')">Technology</a>
+      </div>
+    </div>
+    <div>
+      <div class="footer-col-title">Company</div>
+      <div class="footer-links">
+        <a onclick="showPage('about')">About Us</a>
+        <a onclick="showPage('privacy')">Privacy Policy</a>
+        <a>Terms of Use</a>
+        <a>License Info</a>
+        <a>Contact Us</a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2024 PixelVault. Photos by <a href="https://unsplash.com" target="_blank">Unsplash</a> · AI by <a href="https://pollinations.ai" target="_blank">Pollinations</a></span>
+    <span><a onclick="showPage('privacy')">Privacy</a> · <a>Terms</a> · <a>Sitemap</a></span>
+  </div>
+</footer>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="closeLbOutside(event)">
+  <div class="lb-inner">
+    <div class="lb-img-wrap">
+      <img id="lbImg" src="" alt="">
+      <button class="lb-nav lb-prev" onclick="lbNav(-1)">‹</button>
+      <button class="lb-nav lb-next" onclick="lbNav(1)">›</button>
+      <button class="lb-close" onclick="closeLb()">✕</button>
+    </div>
+    <div class="lb-info" id="lbInfo"></div>
+  </div>
+</div>
+
+<button id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+<div class="toast" id="toast"></div>
+
+<script>
+const ACCESS_KEY = 'ABUvP1ml80WAG9QvcLrSkV1BG20ncf5We3SqGLBIP24';
+
+const TAGS    = ['Nature','Architecture','Business','Food','Travel','Portrait','Technology','Animals','City','Abstract','Fashion','Sports'];
+const QUERIES = ['nature','architecture','business','food','travel','portrait','technology','animal','city','abstract','fashion','sports'];
+
+const CATS = [
+  {l:'Nature',q:'nature',n:'420K+',e:'🌿'},{l:'Architecture',q:'architecture',n:'180K+',e:'🏛️'},
+  {l:'Food & Drink',q:'food',n:'95K+',e:'🍽️'},{l:'Travel',q:'travel',n:'310K+',e:'✈️'},
+  {l:'Portrait',q:'portrait',n:'220K+',e:'👤'},{l:'Technology',q:'technology',n:'140K+',e:'💻'},
+  {l:'Animals',q:'animal',n:'160K+',e:'🐾'},{l:'Business',q:'business',n:'200K+',e:'💼'},
+  {l:'City',q:'city',n:'250K+',e:'🏙️'},{l:'Abstract',q:'abstract',n:'75K+',e:'🎨'},
+  {l:'Fashion',q:'fashion',n:'88K+',e:'👗'},{l:'Sports',q:'sports',n:'120K+',e:'⚽'},
+  {l:'Flowers',q:'flower',n:'130K+',e:'🌸'},{l:'Landscape',q:'landscape',n:'380K+',e:'🏔️'},
+  {l:'Interior',q:'interior design',n:'65K+',e:'🛋️'},{l:'Minimal',q:'minimalist',n:'90K+',e:'⬜'},
+];
+
+const TRENDING_DATA = [
+  {label:'Sunset Photography',n:'2.1M views'},{label:'Street Art',n:'1.8M views'},
+  {label:'Coffee Aesthetics',n:'1.6M views'},{label:'Mountain Hiking',n:'1.4M views'},
+  {label:'Urban Minimalism',n:'1.2M views'},{label:'Ocean Waves',n:'1.1M views'},
+  {label:'Cozy Interior',n:'980K views'},{label:'Forest Mist',n:'870K views'},
+  {label:'Night Sky',n:'760K views'},{label:'Autumn Leaves',n:'720K views'},
+];
+
+const COLLECTIONS = [
+  {name:'Golden Hour',desc:'Warm sunset scenes',count:'248 photos',seeds:['sunset1','sunset2','sunset3']},
+  {name:'Urban Life',desc:'City streets & architecture',count:'512 photos',seeds:['city1','urban2','street3']},
+  {name:'Wild Nature',desc:'Animals & wilderness',count:'364 photos',seeds:['forest1','animal2','nature3']},
+  {name:'Minimal Spaces',desc:'Clean, simple aesthetics',count:'189 photos',seeds:['minimal1','white2','clean3']},
+  {name:'Food Stories',desc:'Culinary art & ingredients',count:'431 photos',seeds:['food1','kitchen2','meal3']},
+  {name:'Tech & Future',desc:'Technology & innovation',count:'275 photos',seeds:['tech1','code2','digital3']},
+];
+
+const SUGGESTS = ['mountain sunrise','coffee shop','urban street','ocean waves','forest path','minimalist workspace','vintage car','night city lights','tropical beach','autumn leaves','modern architecture','wild flowers','rainy window','cozy living room','desert dunes','aerial view','black and white portrait','neon lights'];
+
+const AI_PRESETS = [
+  'A cozy cabin in a snowy forest at night',
+  'Futuristic city with flying cars, neon lights',
+  'Underwater coral reef with colorful fish',
+  'Cherry blossom path in spring Japan',
+  'Coffee shop on a rainy evening, warm bokeh',
+  'Astronaut floating in colorful nebula',
+  'Minimalist white room with sunlight shadows',
+  'Ancient dragon sleeping on mountain peak',
+  'Retro 1980s synthwave sunset',
+  'Macro photo of dewdrops on a spider web',
+];
+
+const PHOTO_NAMES = ['Morning Mist','Golden Hour','Urban Pulse','Nature\'s Best','Serene Escape','Fresh Light','City Nights','Open Skies','Wild & Free','Still Waters','Busy Streets','Hidden Gems','Close Up','Looking Up','The Journey','Fine Details','After Rain','Winter World','Birdsong','Lake Reflection','Dusk Falls','Light & Shadow','Life in Motion','Timeless','The Long Road','Misty Mountains','Sunrise Glow','Deep Blue','Forest Trail','Old & New'];
+const SEEDS_EN   = ['forest','city','food','sky','ocean','mountain','flower','sunset','street','coffee','desk','travel','portrait','tech','animal','building','rain','snow','bird','lake','road','bridge','market','village','park','beach','desert','waterfall','cave','fog'];
+const IMG_SIZES  = [[400,500],[400,300],[400,600],[400,400],[400,350],[400,550],[400,320],[400,480],[400,260],[400,440],[400,380],[400,520],[400,290],[400,460],[400,340],[400,410],[400,530],[400,370],[400,310],[400,490]];
+
+let curPage=1,curQuery='nature',curOrientation='',curColor='',isLoading=false,allPhotos=[],lbIdx=0,favs=new Set(),aiHistory=[];
+
+/* ── PAGES & TABS ── */
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  window.scrollTo(0,0);
+}
+function switchTab(tab){
+  ['search','ai','cat','coll'].forEach(t=>{
+    const btn=document.getElementById('tab-'+t);
+    const content=document.getElementById('tabContent-'+t);
+    if(btn) btn.classList.toggle('active',t===tab);
+    if(content) content.style.display=t===tab?'block':'none';
+  });
+  if(tab==='search'&&allPhotos.length===0) fetchImages(curQuery,1);
+}
+
+/* ── TAGS & TRENDING ── */
+function renderTags(){
+  document.getElementById('tagList').innerHTML=TAGS.map((t,i)=>
+    `<span class="tag${i===0?' active':''}" onclick="tagClick(this,'${QUERIES[i]}','${t}')">${t}</span>`
+  ).join('');
+}
+function renderTrending(){
+  document.getElementById('trendingTags').innerHTML=TRENDING_DATA.map(t=>
+    `<span class="trend-tag" onclick="tagClick(null,'${t.label.split(' ')[0].toLowerCase()}','${t.label}')">${t.label} <span class="trend-num">${t.n}</span></span>`
+  ).join('');
+}
+function tagClick(el,q,label){
+  document.querySelectorAll('.tag').forEach(t=>t.classList.remove('active'));
+  if(el) el.classList.add('active');
+  curQuery=q; curPage=1;
+  document.getElementById('gallery').innerHTML=''; allPhotos=[];
+  document.getElementById('galleryTitle').textContent='✦ '+label+' Photos';
+  showPage('home'); switchTab('search');
+  fetchImages(q,1);
+}
+function doSearch(){
+  const q=document.getElementById('searchInput').value.trim()||'nature';
+  hideSug();
+  document.querySelectorAll('.tag').forEach(t=>t.classList.remove('active'));
+  curQuery=q; curPage=1;
+  document.getElementById('gallery').innerHTML=''; allPhotos=[];
+  document.getElementById('galleryTitle').textContent=`✦ Results for "${q}"`;
+  showPage('home'); switchTab('search');
+  fetchImages(q,1);
+}
+function setOrientation(btn,o){
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active'); curOrientation=o; curPage=1;
+  document.getElementById('gallery').innerHTML=''; allPhotos=[];
+  fetchImages(curQuery,1);
+}
+function setColor(btn,c){
+  // remove active only from color buttons (last group)
+  btn.parentElement.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active'); curColor=c; curPage=1;
+  document.getElementById('gallery').innerHTML=''; allPhotos=[];
+  fetchImages(curQuery,1);
+}
+function onSortChange(){}
+
+/* ── SUGGESTIONS ── */
+const si=document.getElementById('searchInput');
+const sb=document.getElementById('suggestions');
+si.addEventListener('input',()=>{
+  const v=si.value.trim().toLowerCase(); if(!v){hideSug();return;}
+  const m=SUGGESTS.filter(s=>s.includes(v)).slice(0,7);
+  if(!m.length){hideSug();return;}
+  sb.innerHTML=m.map(s=>`<div class="sug-item" onclick="pickSug('${s}')">🔍 ${s}</div>`).join('');
+  sb.classList.add('show');
+});
+si.addEventListener('keydown',e=>{if(e.key==='Enter')doSearch();if(e.key==='Escape')hideSug();});
+document.addEventListener('click',e=>{if(!e.target.closest('.search-wrap'))hideSug();});
+function pickSug(v){si.value=v;hideSug();doSearch();}
+function hideSug(){sb.classList.remove('show');}
+
+/* ── FETCH ── */
+function clearSk(){document.querySelectorAll('.skeleton').forEach(s=>s.remove());}
+function renderSk(){
+  const g=document.getElementById('gallery');
+  [300,220,380,200,320,260,400,240,330,190,360,210,280,420,250,340].forEach(h=>{
+    const sk=document.createElement('div'); sk.className='skeleton'; sk.style.height=h+'px'; g.appendChild(sk);
+  });
+}
+
+function fetchImages(query,page){
+  if(isLoading)return; isLoading=true;
+  document.getElementById('globalLoading').style.display='block';
+  if(page===1) renderSk();
+  const picsumTimer=setTimeout(()=>{
+    document.getElementById('globalLoading').style.display='none';
+    isLoading=false; if(page===1) clearSk();
+    loadPicsum(query,page);
+  },350);
+  let url=`https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&page=${page}&per_page=30&client_id=${ACCESS_KEY}`;
+  if(curOrientation) url+=`&orientation=${curOrientation}`;
+  if(curColor) url+=`&color=${curColor}`;
+  fetch(url)
+    .then(r=>{if(!r.ok)throw Error(r.status);return r.json();})
+    .then(data=>{
+      if(!data.results||data.errors||!data.results.length)return;
+      clearTimeout(picsumTimer);
+      document.getElementById('globalLoading').style.display='none';
+      isLoading=false;
+      if(page===1){clearSk();document.getElementById('gallery').innerHTML='';allPhotos=[];}
+      document.getElementById('resultCount').textContent=(data.total||0).toLocaleString()+' photos';
+      data.results.forEach(p=>{allPhotos.push(p);appendCard(p,allPhotos.length-1);});
+    })
+    .catch(()=>{});
+}
+
+function loadPicsum(query,page){
+  const offset=(page-1)*30;
+  document.getElementById('resultCount').textContent='Millions of photos · Free download';
+  for(let i=0;i<30;i++){
+    const seed=query.replace(/\s+/g,'-')+'-'+SEEDS_EN[(offset+i)%SEEDS_EN.length]+'-p'+page+i;
+    const [pw,ph]=IMG_SIZES[(offset+i)%IMG_SIZES.length];
+    const name=PHOTO_NAMES[(offset+i)%PHOTO_NAMES.length];
+    const photo={
+      id:'pc-'+page+'-'+i, urls:{small:`https://picsum.photos/seed/${seed}/${pw}/${ph}`,regular:`https://picsum.photos/seed/${seed}/800/600`,full:`https://picsum.photos/seed/${seed}/1600/1067`},
+      user:{name,username:'pixelvault',profile_image:{medium:''}},
+      alt_description:query+' – '+name, description:name,
+      width:pw, height:ph, likes:Math.floor(Math.abs(Math.sin(offset+i)*1800)+120),
+      created_at:new Date(Date.now()-(offset+i)*864e6).toISOString(),
+      tags:[{title:query},{title:'HD'},{title:'free'},{title:'commercial'}]
+    };
+    allPhotos.push(photo); appendCard(photo,allPhotos.length-1);
+  }
+}
+
+/* ── CARD ── */
+function appendCard(photo,index){
+  const g=document.getElementById('gallery');
+  const card=document.createElement('div'); card.className='img-card';
+  const thumb=photo.urls?.small||photo.url;
+  const full=photo.urls?.full||photo.url;
+  const author=photo.user?.name||'Photographer';
+  const desc=photo.alt_description||photo.description||'';
+  const [h,w]=[photo.height||300,photo.width||400];
+  const fav=favs.has(photo.id);
+  const res=photo.width?`${photo.width}×${photo.height}`:'';
+  card.innerHTML=`
+    <img src="${thumb}" alt="${desc}" loading="lazy" style="aspect-ratio:${w}/${h}">
+    ${res?`<div class="img-res-tag">${res}</div>`:''}
+    <div class="img-overlay">
+      <div class="img-author">📸 ${author}</div>
+      ${desc?`<div class="img-desc">${desc}</div>`:''}
+      <div class="img-actions">
+        <button class="btn-dl" onclick="event.stopPropagation();dlPhoto('${full}','${photo.id}','${desc.replace(/'/g,'').slice(0,40)}')">↓ Free Download</button>
+        <button class="btn-icon ${fav?'liked':''}" onclick="event.stopPropagation();toggleFav(this,'${photo.id}')">${fav?'♥':'♡'}</button>
+        <button class="btn-icon" onclick="event.stopPropagation();openLb(${index})">⤢</button>
+      </div>
+    </div>`;
+  card.addEventListener('click',()=>openLb(index));
+  g.appendChild(card);
+}
+
+/* ── DOWNLOAD ── */
+async function dlPhoto(url,id,name){
+  showToast('⏳ Preparing download…');
+  try{
+    if(id&&!id.startsWith('pc-')) fetch(`https://api.unsplash.com/photos/${id}/download?client_id=${ACCESS_KEY}`).catch(()=>{});
+    const res=await fetch(url); if(!res.ok)throw Error();
+    const blob=await res.blob();
+    const ext=blob.type.includes('png')?'png':'jpg';
+    const fname=(name||'pixelvault-'+id).replace(/[^a-z0-9_\-]/gi,'_').slice(0,60)+'.'+ext;
+    const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=fname;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(a.href);
+    showToast('✅ Download started!');
+  }catch{window.open(url,'_blank');showToast('💡 Right-click → Save image as…');}
+}
+
+/* ── FAVORITES ── */
+function toggleFav(btn,id){
+  if(favs.has(id)){favs.delete(id);btn.classList.remove('liked');btn.textContent='♡';showToast('Removed from favorites');}
+  else{favs.add(id);btn.classList.add('liked');btn.textContent='♥';btn.style.transform='scale(1.35)';setTimeout(()=>{btn.style.transform='scale(1)';btn.style.transition='transform .2s';},150);showToast('Added to favorites ♥');}
+}
+
+/* ── CATEGORIES ── */
+function renderCats(){
+  document.getElementById('catGrid').innerHTML=CATS.map(c=>`
+    <div class="cat-card" onclick="tagClick(null,'${c.q}','${c.l}')">
+      <img src="https://picsum.photos/seed/${c.q}-cat2/320/230" alt="${c.l}" loading="lazy">
+      <div class="cat-overlay">
+        <div class="cat-name">${c.e} ${c.l}</div>
+        <div class="cat-count">${c.n} photos</div>
+      </div>
+    </div>`).join('');
+}
+
+/* ── COLLECTIONS ── */
+function renderCollections(){
+  document.getElementById('collGrid').innerHTML=COLLECTIONS.map(c=>`
+    <div class="coll-card" onclick="tagClick(null,'${c.name.toLowerCase()}','${c.name}')">
+      <div class="coll-preview">
+        <img src="https://picsum.photos/seed/${c.seeds[0]}/400/400" alt="${c.name}" loading="lazy">
+        <img src="https://picsum.photos/seed/${c.seeds[1]}/200/200" alt="${c.name}" loading="lazy">
+        <img src="https://picsum.photos/seed/${c.seeds[2]}/200/200" alt="${c.name}" loading="lazy">
+      </div>
+      <div class="coll-info">
+        <div class="coll-name">${c.name}</div>
+        <div class="coll-meta">${c.desc} · ${c.count}</div>
+      </div>
+    </div>`).join('');
+}
+
+/* ── AI GENERATE ── */
+function renderAiPresets(){
+  document.getElementById('aiPresets').innerHTML=AI_PRESETS.map(p=>
+    `<span class="ai-preset" onclick="document.getElementById('aiPrompt').value='${p.replace(/'/g,"\\'")}'">${p.length>40?p.slice(0,38)+'…':p}</span>`
+  ).join('');
+}
+
+async function generateImages(){
+  const prompt=document.getElementById('aiPrompt').value.trim();
+  if(!prompt){showToast('Please enter an image description first');return;}
+  const style=document.getElementById('aiStyle').value;
+  const quality=document.getElementById('aiQuality').value;
+  const sizeVal=document.getElementById('aiSize').value;
+  const count=Math.min(10,parseInt(document.getElementById('aiCount').value));
+  const [w,h]=sizeVal.split('/');
+  const btn=document.getElementById('aiGenBtn');
+  btn.disabled=true; btn.textContent='Generating…';
+  const out=document.getElementById('aiOutput');
+  out.innerHTML=`<div class="ai-progress"><div class="ai-spinner"></div><div class="ai-progress-text">AI is creating your ${count} image${count>1?'s':''}…</div><div class="ai-progress-sub">Estimated time: ${count*3}–${count*5} seconds</div></div>`;
+  const fullPrompt=encodeURIComponent(prompt+style+quality+', detailed');
+  const imgs=[];
+  for(let i=0;i<count;i++){
+    const seed=Math.floor(Math.random()*999999);
+    imgs.push({url:`https://image.pollinations.ai/prompt/${fullPrompt}?width=${w}&height=${h}&seed=${seed}&nologo=true`,prompt,seed,w,h});
+  }
+  await Promise.allSettled(imgs.map(im=>new Promise(res=>{const img=new Image();img.onload=img.onerror=res;img.src=im.url;})));
+  out.innerHTML=`
+    <div class="ai-count-badge">✅ ${count} image${count>1?'s':''} generated · Prompt: "${prompt}"</div>
+    <div class="ai-results-grid">
+      ${imgs.map(im=>`
+        <div class="ai-card">
+          <span class="ai-badge">AI GEN</span>
+          <img src="${im.url}" alt="${im.prompt}" loading="lazy" style="aspect-ratio:${im.w}/${im.h};object-fit:cover">
+          <div class="ai-card-info">
+            <div class="ai-card-prompt">${im.prompt}</div>
+            <div class="ai-card-actions">
+              <button class="btn-dl" onclick="dlPhoto('${im.url}','ai-${im.seed}','ai-generated')">↓ Download</button>
+              <button class="btn-icon" onclick="toggleFav(this,'ai-${im.seed}')">♡</button>
+            </div>
+          </div>
+        </div>`).join('')}
+    </div>`;
+  aiHistory.unshift({prompt,imgs,time:new Date().toLocaleTimeString()});
+  renderAiHistory();
+  btn.disabled=false; btn.textContent='✨ Generate';
+}
+
+function renderAiHistory(){
+  if(!aiHistory.length)return;
+  const hist=document.getElementById('aiHistory');
+  hist.style.display='block';
+  document.getElementById('aiHistoryGrid').innerHTML=aiHistory.slice(0,8).map(h=>`
+    <div class="ai-card" onclick="document.getElementById('aiPrompt').value='${h.prompt.replace(/'/g,"\\'")}';showPage('home');switchTab('ai')">
+      <span class="ai-badge">AI GEN</span>
+      <img src="${h.imgs[0].url}" alt="${h.prompt}" loading="lazy" style="aspect-ratio:1;object-fit:cover">
+      <div class="ai-card-info">
+        <div class="ai-card-prompt">${h.prompt}</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:4px">${h.time} · ${h.imgs.length} image${h.imgs.length>1?'s':''}</div>
+      </div>
+    </div>`).join('');
+}
+
+/* ── LIGHTBOX ── */
+function openLb(idx){lbIdx=idx;renderLb();document.getElementById('lightbox').classList.add('open');document.body.style.overflow='hidden';}
+function closeLb(){document.getElementById('lightbox').classList.remove('open');document.body.style.overflow='';}
+function closeLbOutside(e){if(e.target===document.getElementById('lightbox'))closeLb();}
+function lbNav(d){lbIdx=(lbIdx+d+allPhotos.length)%allPhotos.length;renderLb();}
+function renderLb(){
+  const p=allPhotos[lbIdx]; if(!p)return;
+  const full=p.urls?.regular||p.urls?.small;
+  const dl=p.urls?.full||p.urls?.regular;
+  const author=p.user?.name||'Photographer';
+  const handle=p.user?.username||'';
+  const avatar=p.user?.profile_image?.medium||`https://i.pravatar.cc/80?u=${handle||lbIdx}`;
+  const desc=p.alt_description||p.description||'Untitled';
+  const tags=p.tags?p.tags.slice(0,8).map(t=>t.title):[];
+  const fav=favs.has(p.id);
+  const date=p.created_at?new Date(p.created_at).toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'}):'Unknown';
+  document.getElementById('lbImg').src=full;
+  document.getElementById('lbInfo').innerHTML=`
+    <div class="lb-author">
+      <div class="lb-avatar"><img src="${avatar}" alt="${author}" onerror="this.style.display='none'"></div>
+      <div><div class="lb-author-name">${author}</div>${handle?`<div class="lb-author-handle">@${handle} · Unsplash</div>`:''}</div>
+    </div>
+    <div class="lb-desc">${desc.charAt(0).toUpperCase()+desc.slice(1)}</div>
+    <div class="lb-meta">
+      ${p.width?`<div class="lb-meta-row"><span class="lb-meta-key">Resolution</span><span class="lb-meta-val">${p.width.toLocaleString()} × ${p.height.toLocaleString()}</span></div>`:''}
+      <div class="lb-meta-row"><span class="lb-meta-key">Likes</span><span class="lb-meta-val">♥ ${(p.likes||0).toLocaleString()}</span></div>
+      <div class="lb-meta-row"><span class="lb-meta-key">Published</span><span class="lb-meta-val">${date}</span></div>
+      <div class="lb-meta-row"><span class="lb-meta-key">${lbIdx+1} of ${allPhotos.length}</span><span class="lb-meta-val" style="color:var(--muted)">Use ← → to navigate</span></div>
+    </div>
+    ${tags.length?`<div class="lb-tags">${tags.map(t=>`<span class="lb-tag" onclick="tagClick(null,'${t}','${t}')">#${t}</span>`).join('')}</div>`:''}
+    <div class="lb-actions">
+      <button class="lb-dl" onclick="dlPhoto('${dl}','${p.id}','${desc.replace(/'/g,'').slice(0,40)}')">↓ Free Download</button>
+      <div class="lb-sec-row">
+        <button class="lb-sec ${fav?'liked':''}" id="lbFavBtn" onclick="lbTogFav('${p.id}')">${fav?'♥ Saved':'♡ Save'}</button>
+        <button class="lb-sec" onclick="copyLink('${dl}')">🔗 Copy URL</button>
+      </div>
+    </div>`;
+}
+function lbTogFav(id){
+  const btn=document.getElementById('lbFavBtn');
+  if(favs.has(id)){favs.delete(id);btn.textContent='♡ Save';btn.classList.remove('liked');}
+  else{favs.add(id);btn.textContent='♥ Saved';btn.classList.add('liked');showToast('Saved to favorites ♥');}
+}
+function copyLink(url){navigator.clipboard?.writeText(url).then(()=>showToast('URL copied to clipboard!'));}
+document.addEventListener('keydown',e=>{
+  if(!document.getElementById('lightbox').classList.contains('open'))return;
+  if(e.key==='ArrowRight')lbNav(1);
+  if(e.key==='ArrowLeft')lbNav(-1);
+  if(e.key==='Escape')closeLb();
+});
+
+/* ── INFINITE SCROLL ── */
+new IntersectionObserver(entries=>{
+  if(entries[0].isIntersecting&&!isLoading){curPage++;if(allPhotos.length)fetchImages(curQuery,curPage);}
+},{rootMargin:'400px'}).observe(document.getElementById('sentinel'));
+
+/* ── TOAST & SCROLL ── */
+let toastT;
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),2800);}
+window.addEventListener('scroll',()=>document.getElementById('backToTop').classList.toggle('show',scrollY>700));
+
+/* ── INIT ── */
+renderTags(); renderTrending(); renderCats(); renderCollections(); renderAiPresets();
+fetchImages('nature',1);
+</script>
+</body>
+</html>
